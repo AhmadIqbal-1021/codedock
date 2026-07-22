@@ -11,15 +11,40 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 export const metadata: Metadata = {
- title: {
-  default: "CodeDock",
-  template: "%s | CodeDock",
-},
-description:
-  "Fast, free developer tools with AI-powered features."
- 
+  title: {
+    default: "CodeDock - Free Developer Tools & AI Utilities",
+    template: "%s | CodeDock",
+  },
+  description:
+    "CodeDock provides free developer tools, AI utilities, formatters, converters, and productivity tools for developers.",
+  keywords: [
+    "developer tools",
+    "online tools",
+    "JSON formatter",
+    "regex tester",
+    "AI tools",
+    "coding utilities",
+  ],
+  authors: [
+    {
+      name: "CodeDock",
+    },
+  ],
+  openGraph: {
+    title: "CodeDock - Free Developer Tools",
+    description:
+      "Fast, free developer tools and AI-powered utilities.",
+    url: "https://codedock.com",
+    siteName: "CodeDock",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CodeDock - Free Developer Tools",
+    description:
+      "Free developer tools and AI utilities.",
+  },
 };
 
 export default function RootLayout({
