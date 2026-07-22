@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
 interface SectionProps {
-  children: ReactNode;
-  className?: string;
+ children: ReactNode;
+ className?: string;
+ id?: string;
 }
-
 /**
  * Vertical rhythm wrapper for page sections. Handles consistent
  * top/bottom spacing so individual sections don't each reinvent it;
