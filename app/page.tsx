@@ -15,8 +15,8 @@ export default function Home() {
         <Hero />
         <Categories />
         <FeaturedTools />
-        <LatestArticles />
-        <WhyCodeDock />
+        {/* <LatestArticles /> */}
+        {/* <WhyCodeDock /> */}
       </main>
 
       <Footer />
