@@ -4,7 +4,7 @@ import { ToolFeatures } from "@/components/tool-page/ToolFeatures";
 import { ToolFAQ } from "@/components/tool-page/ToolFAQ";
 import { RelatedTools } from "@/components/tool-page/RelatedTools";
 import { JsonFormatter } from "@/components/tools/json-formatter/JsonFormatter";
-import {ALL_TOOLS} from "@/constants/tools";
+import {ALL_TOOLS} from "@/constants/all-tools";
 
 export const metadata = {
   title: "JSON Formatter - Format JSON Online",
@@ -48,7 +48,7 @@ const FAQS = [
 ];
 
 const RELATED_TOOLS = ALL_TOOLS.filter(
-  (tool) => tool.category === "Developer Tools" && tool.slug !== "json-formatter"
+  (tool) => tool.category === "developer-tools" && tool.slug !== "json-formatter"
 );
 
 export default function Page() {

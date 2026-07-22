@@ -7,6 +7,7 @@ import {
   Lock,
   type LucideIcon,
 } from "lucide-react";
+import { CATEGORIES } from "./categories";
 
 /**
  * Matches the slugs defined in constants/categories.ts. Kept as a
@@ -113,6 +114,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: KeyRound,
     status: "coming-soon",
+     featured: true,
     keywords: ["jwt", "decoder", "token", "auth", "json web token"],
   },
   {
@@ -124,6 +126,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: Regex,
     status: "coming-soon",
+     featured: true,
     keywords: ["regex", "regular expression", "pattern", "tester"],
   },
   {
@@ -146,6 +149,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: Link2,
     status: "coming-soon",
+     featured: true,
     keywords: ["url", "encode", "decode", "uri", "percent encoding"],
   },
   {
@@ -157,6 +161,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "productivity",
     icon: Lock,
     status: "coming-soon",
+     featured: true,
     keywords: ["password", "generator", "security", "random"],
   },
 ];
@@ -189,4 +194,15 @@ export function getLiveTools(): ToolInfo[] {
 /** Simple related-tools helper: same category first, capped to `limit`. */
 export function getRelatedTools(tool: ToolInfo, limit = 3): ToolInfo[] {
   return getToolsByCategory(tool.category, tool.slug).slice(0, limit);
+}
+
+
+
+export function getCategoriesWithCounts() {
+  return CATEGORIES.map((category) => ({
+    ...category,
+    toolCount: ALL_TOOLS.filter(
+      (tool) => tool.category === category.slug && tool.status === "live"
+    ).length,
+  }));
 }

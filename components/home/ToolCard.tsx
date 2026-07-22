@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Tool } from "@/constants/tools";
+import type { ALL_TOOLS } from "@/constants/all-tools";
 
 interface ToolCardProps {
-  tool: Tool;
+  tool: typeof ALL_TOOLS[number];
   className?: string;
 }
 

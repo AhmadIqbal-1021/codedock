@@ -3,11 +3,11 @@ import { ArrowRight } from "lucide-react";
 import { Section } from "@/components/shared/Section";
 import { Container } from "@/components/shared/Container";
 import { ToolCard } from "./ToolCard";
-import { ALL_TOOLS} from "@/constants/tools";
+import { ALL_TOOLS} from "@/constants/all-tools";
 
 /**
  * Renders only the `featured` tools from TOOLS. Mark/unmark a tool as
- * featured in src/constants/tools.ts and this grid updates on its own.
+ * featured in src/constants/all-tools.ts and this grid updates on its own.
  */
 export function FeaturedTools() {
   const featuredTools = ALL_TOOLS.filter((tool) => tool.featured);
@@ -15,7 +15,7 @@ export function FeaturedTools() {
   return (
    <Section id="featured-tools">
       <Container>
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
           <div>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Featured tools

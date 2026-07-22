@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/constants/categories";
+  
 
 interface CategoryCardProps {
   category: Category;
@@ -14,7 +15,7 @@ interface CategoryCardProps {
  * cohesive affordance rather than separate hover targets.
  */
 export function CategoryCard({ category, className }: CategoryCardProps) {
-  const { name, description, toolCount, icon: Icon, slug } = category;
+  const { name, description,toolCount, icon: Icon, slug } = category;
 
   return (
     <Link

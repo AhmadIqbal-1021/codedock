@@ -25,7 +25,7 @@ export const CATEGORIES: Category[] = [
     name: "Developer Tools",
     slug: "developer-tools",
     description: "Formatters, converters, and utilities for everyday coding.",
-    toolCount: 0,
+    toolCount: 1,
     icon: Code2,
   },
   {
