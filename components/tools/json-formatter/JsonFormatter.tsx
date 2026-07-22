@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Braces, Check, Copy, Trash2, Wand2 } from "lucide-react";
+import { Check, Copy, Trash2, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToolHeader } from "@/components/tools/json-formatter/ToolHeader";
 import { JsonEditor } from "./JsonEditor";
 
 const INDENT_OPTIONS = [2, 4] as const;
-type Indent = (typeof INDENT_OPTIONS)[number];  
+type Indent = (typeof INDENT_OPTIONS)[number];
 
 const SAMPLE_PLACEHOLDER = `{
   "paste": "your JSON here",
@@ -15,8 +14,19 @@ const SAMPLE_PLACEHOLDER = `{
 }`;
 
 /**
- * Client-side JSON Formatter. No network calls: parsing, validation,
- * and formatting all happen in the browser via JSON.parse/stringify.
+ * JSON Formatter's working UI: toolbar + input/output editors.
+ * No network calls — parsing, validation, and formatting all happen
+ * in the browser via JSON.parse/stringify.
+ *
+ * This is meant to be rendered as `children` inside ToolLayout, which
+ * supplies the page's icon/title/description/category header:
+ *
+ * <ToolLayout icon={Braces} title="JSON Formatter" description="..." category="Developer Tools">
+ *   <JsonFormatter />
+ *   <ToolFeatures features={...} />
+ *   <ToolFAQ items={...} />
+ *   <RelatedTools tools={...} />
+ * </ToolLayout>
  */
 export function JsonFormatter() {
   const [input, setInput] = useState("");
@@ -62,13 +72,6 @@ export function JsonFormatter() {
 
   return (
     <div className="flex flex-col gap-8">
-      <ToolHeader
-        icon={Braces}
-        title="JSON Formatter"
-        description="Paste JSON, format it with clean indentation, and catch syntax errors instantly. Everything runs in your browser."
-        category="Developer Tools"
-      />
-
       <div className="flex flex-wrap items-center gap-3">
         <Button
           onClick={handleFormat}
