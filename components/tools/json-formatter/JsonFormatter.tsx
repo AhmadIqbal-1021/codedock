@@ -5,9 +5,8 @@ import { Check, Copy, Download, Upload, Wand2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolToolbar, type ToolAction } from "@/components/shared/ToolToolbar";
 import { JsonEditor } from "./JsonEditor";
+import TextStats from "@/components/shared/TextStats";
 
-const INDENT_OPTIONS = [2, 4] as const;
-type Indent = (typeof INDENT_OPTIONS)[number];
 
 const SAMPLE_PLACEHOLDER = `{
   "paste": "your JSON here",
@@ -32,31 +31,79 @@ const SAMPLE_PLACEHOLDER = `{
  *   <RelatedTools tools={...} />
  * </ToolLayout>
  */
+
+
+const INDENT_OPTIONS = [2, 4] as const;
+type Indent = (typeof INDENT_OPTIONS)[number];
+
+type JsonError = {
+  message: string;
+  line: number;
+  column: number;
+};
+
+function getJsonErrorDetails(
+  error: unknown,
+  json: string
+): JsonError {
+  const message =
+    error instanceof Error
+      ? error.message
+      : "Invalid JSON";
+
+  const match = message.match(/position (\d+)/);
+
+  if (!match) {
+    return {
+      message,
+      line: 0,
+      column: 0,
+    };
+  }
+
+  const position = Number(match[1]);
+
+  const beforeError = json.substring(0, position);
+  const lines = beforeError.split("\n");
+
+  return {
+    message,
+    line: lines.length,
+    column: lines[lines.length - 1].length + 1,
+  };
+}
+
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error,setError] = useState<JsonError | null>(null);
   const [indent, setIndent] = useState<Indent>(2);
   const [copied, setCopied] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFormat = () => {
-    if (!input.trim()) {
-      setError("Paste some JSON before formatting.");
-      setOutput("");
-      return;
-    }
+ const handleFormat = () => {
+  if (!input.trim()) {
+    setError({
+      message: "Paste some JSON before formatting.",
+      line: 0,
+      column: 0,
+    });
+    setOutput("");
+    return;
+  }
 
-    try {
-      const parsed = JSON.parse(input);
-      setOutput(JSON.stringify(parsed, null, indent));
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid JSON.");
-      setOutput("");
-    }
-  };
+  try {
+    const parsed = JSON.parse(input);
+
+    setOutput(JSON.stringify(parsed, null, indent));
+    setError(null);
+  } catch (err) {
+    setOutput("");
+    setError(getJsonErrorDetails(err, input));
+  }
+};
+
 
   const handleClear = () => {
     setInput("");
@@ -85,10 +132,15 @@ export function JsonFormatter() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!file.name.endsWith(".json")) {
-  setError("Please upload a JSON file.");
+   if (!file.name.endsWith(".json")) {
+  setError({
+    message: "Please upload a JSON file.",
+    line: 0,
+    column: 0,
+  });
   return;
 }
+
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -173,8 +225,24 @@ export function JsonFormatter() {
           value={input}
           onChange={setInput}
           placeholder={SAMPLE_PLACEHOLDER}
-          error={error}
+                  error={
+          error && (
+            <div className="rounded-md border p-4 text-sm">
+              <p className="font-semibold">Invalid JSON</p>
+
+              <div className="mt-2 space-y-1">
+                <p>Line: {error.line}</p>
+                <p>Column: {error.column}</p>
+                <p>{error.message}</p>
+              </div>
+            </div>
+            
+          )
+          
+        }
+
         />
+        
 
         <JsonEditor
           id="json-output"
@@ -202,11 +270,15 @@ export function JsonFormatter() {
                 </>
               )}
             </Button>
+            
           }
         />
       </div>
+      <TextStats text={input} />
     </div>
+    
   );
 }
+
 
 export default JsonFormatter;

@@ -12,7 +12,7 @@ interface JsonEditorProps {
   onChange?: (value: string) => void;
   placeholder?: string;
   readOnly?: boolean;
-  error?: string | null;
+  error?: ReactNode;
   actions?: ReactNode;
   className?: string;
 }
