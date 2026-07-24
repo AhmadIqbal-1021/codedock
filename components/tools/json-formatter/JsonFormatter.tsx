@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent
+} from "react";
 import { Check, Copy, Download, Upload, Wand2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolToolbar, type ToolAction } from "@/components/shared/ToolToolbar";
@@ -38,71 +44,167 @@ type Indent = (typeof INDENT_OPTIONS)[number];
 
 type JsonError = {
   message: string;
-  line: number;
-  column: number;
+  line?: number;
+  column?: number;
 };
-
 function getJsonErrorDetails(
   error: unknown,
   json: string
 ): JsonError {
+
   const message =
     error instanceof Error
       ? error.message
       : "Invalid JSON";
 
-  const match = message.match(/position (\d+)/);
 
-  if (!match) {
-    return {
-      message,
-      line: 0,
-      column: 0,
-    };
+  let position = -1;
+
+
+  const positionMatch =
+    message.match(/position (\d+)/);
+
+
+  if (positionMatch) {
+    position = Number(positionMatch[1]);
   }
 
-  const position = Number(match[1]);
 
-  const beforeError = json.substring(0, position);
-  const lines = beforeError.split("\n");
+  if (position === -1) {
+
+    const badCharMatch =
+      message.match(/token ['"](.+?)['"]/);
+
+
+    if (badCharMatch) {
+
+      const badChar =
+        badCharMatch[1];
+
+
+      position =
+        json.indexOf(badChar);
+
+    }
+
+  }
+
+
+  if (position === -1) {
+
+    return {
+      message,
+    };
+
+  }
+
+
+  const beforeError =
+    json.slice(0, position);
+
+
+  const lines =
+    beforeError.split("\n");
+
 
   return {
     message,
     line: lines.length,
-    column: lines[lines.length - 1].length + 1,
+    column:
+      lines[lines.length - 1].length + 1,
   };
 }
-
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [error,setError] = useState<JsonError | null>(null);
   const [indent, setIndent] = useState<Indent>(2);
   const [copied, setCopied] = useState(false);
+  
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
- const handleFormat = () => {
-  if (!input.trim()) {
-    setError({
-      message: "Paste some JSON before formatting.",
-      line: 0,
-      column: 0,
-    });
-    setOutput("");
-    return;
-  }
 
-  try {
-    const parsed = JSON.parse(input);
+const handleFormat = useCallback(() => {
 
-    setOutput(JSON.stringify(parsed, null, indent));
-    setError(null);
-  } catch (err) {
-    setOutput("");
-    setError(getJsonErrorDetails(err, input));
-  }
-};
+ if (!input.trim()) {
+
+   setError({
+     message:"Paste some JSON before formatting."
+   });
+
+   setOutput("");
+
+   return;
+ }
+
+
+ try {
+
+   const parsed = JSON.parse(input);
+
+   setOutput(
+     JSON.stringify(
+       parsed,
+       null,
+       indent
+     )
+   );
+
+   setError(null);
+
+
+ } catch(err){
+
+   setOutput("");
+
+   setError(
+     getJsonErrorDetails(
+       err,
+       input
+     )
+   );
+
+ }
+
+}, [input, indent]);
+
+  useEffect(() => {
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+
+    if (
+      event.ctrlKey &&
+      event.key === "Enter"
+    ) {
+
+      event.preventDefault();
+
+      handleFormat();
+
+    }
+
+  };
+
+
+  window.addEventListener(
+    "keydown",
+    handleKeyDown
+  );
+
+
+  return () => {
+
+    window.removeEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+  };
+
+
+}, [input, indent]);
+
 
 
   const handleClear = () => {
@@ -206,6 +308,17 @@ export function JsonFormatter() {
           ))}
         </div>
       </ToolToolbar>
+                <div className="text-xs text-muted-foreground">
+            Press{" "}
+            <kbd className="rounded border px-1.5 py-0.5">
+              Ctrl
+            </kbd>
+            {" + "}
+            <kbd className="rounded border px-1.5 py-0.5">
+              Enter
+            </kbd>
+            {" to format JSON"}
+          </div>
 
       {/* Hidden native file input driving the "Upload" toolbar action */}
       <input
@@ -228,12 +341,32 @@ export function JsonFormatter() {
                   error={
           error && (
             <div className="rounded-md border p-4 text-sm">
-              <p className="font-semibold">Invalid JSON</p>
+              <p className="font-semibold">
+                      {
+                      error.line
+                      ? "Invalid JSON"
+                      : "Error"
+                      }
+                      </p>
 
-              <div className="mt-2 space-y-1">
-                <p>Line: {error.line}</p>
-                <p>Column: {error.column}</p>
-                <p>{error.message}</p>
+                            <div className="mt-2 space-y-1">                
+              {
+              error.line && (
+              <p>
+              Line: {error.line}
+              </p>
+              )
+              }
+
+              {
+              error.column && (
+              <p>
+              Column: {error.column}
+              </p>
+                  )
+                }
+
+            <p>{error.message}</p>
               </div>
             </div>
             
