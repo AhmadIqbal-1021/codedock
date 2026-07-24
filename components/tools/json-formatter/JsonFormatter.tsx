@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Copy, Trash2, Wand2 } from "lucide-react";
+import { useRef, useState, type ChangeEvent } from "react";
+import { Check, Copy, Download, Upload, Wand2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ToolToolbar, type ToolAction } from "@/components/shared/ToolToolbar";
 import { JsonEditor } from "./JsonEditor";
 
 const INDENT_OPTIONS = [2, 4] as const;
@@ -15,8 +16,11 @@ const SAMPLE_PLACEHOLDER = `{
 
 /**
  * JSON Formatter's working UI: toolbar + input/output editors.
- * No network calls — parsing, validation, and formatting all happen
- * in the browser via JSON.parse/stringify.
+ * No network calls — parsing, validation, formatting, file upload,
+ * and file download all happen in the browser.
+ *
+ * All business logic (format/clear/copy/upload/download) lives here;
+ * ToolToolbar just renders whatever `actions` array it's handed.
  *
  * This is meant to be rendered as `children` inside ToolLayout, which
  * supplies the page's icon/title/description/category header:
@@ -34,6 +38,8 @@ export function JsonFormatter() {
   const [error, setError] = useState<string | null>(null);
   const [indent, setIndent] = useState<Indent>(2);
   const [copied, setCopied] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFormat = () => {
     if (!input.trim()) {
@@ -70,30 +76,66 @@ export function JsonFormatter() {
     }
   };
 
+  // Upload: clicking the toolbar button just forwards to the hidden
+  // native file input — the browser's file picker does the real work.
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith(".json")) {
+  setError("Please upload a JSON file.");
+  return;
+}
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setInput(reader.result as string);
+      setError(null);
+      setOutput("");
+    };
+    reader.readAsText(file);
+
+    // Reset so selecting the same file again still fires onChange.
+    event.target.value = "";
+  };
+
+  const handleDownload = () => {
+    if (!output) return;
+
+    const blob = new Blob([output], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "codedock-formatted-json.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const actions: ToolAction[] = [
+    { label: "Format JSON", icon: Wand2, onClick: handleFormat },
+    { label: "Clear", icon: Trash2, onClick: handleClear, variant: "outline" },
+    { label: "Upload", icon: Upload, onClick: handleUploadClick, variant: "outline" },
+    {
+      label: "Download",
+      icon: Download,
+      onClick: handleDownload,
+      disabled: !output,
+      variant: "outline",
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          onClick={handleFormat}
-          className="rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 px-5 text-white hover:opacity-90"
-        >
-          <Wand2 className="mr-1.5 h-4 w-4" />
-          Format JSON
-        </Button>
-
-        <Button
-          variant="outline"
-          onClick={handleClear}
-          className="rounded-full border-white/15 bg-transparent"
-        >
-          <Trash2 className="mr-1.5 h-4 w-4" />
-          Clear
-        </Button>
-
+      <ToolToolbar actions={actions}>
         <div
           role="group"
           aria-label="Indent size"
-          className="ml-auto flex items-center gap-1 rounded-full border border-white/10 bg-foreground/[0.03] p-1"
+          className="flex items-center gap-1 rounded-full border border-white/10 bg-foreground/[0.03] p-1"
         >
           {INDENT_OPTIONS.map((option) => (
             <button
@@ -111,7 +153,18 @@ export function JsonFormatter() {
             </button>
           ))}
         </div>
-      </div>
+      </ToolToolbar>
+
+      {/* Hidden native file input driving the "Upload" toolbar action */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,application/json"
+        onChange={handleFileChange}
+        className="hidden"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <JsonEditor
