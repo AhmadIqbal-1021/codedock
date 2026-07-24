@@ -192,10 +192,17 @@ export function getLiveTools(): ToolInfo[] {
 }
 
 /** Simple related-tools helper: same category first, capped to `limit`. */
-export function getRelatedTools(tool: ToolInfo, limit = 3): ToolInfo[] {
-  return getToolsByCategory(tool.category, tool.slug).slice(0, limit);
-}
+export function getRelatedTools(currentSlug: string) {
+  const currentTool = getToolBySlug(currentSlug);
 
+  if (!currentTool) return [];
+
+  return ALL_TOOLS.filter(
+    (tool) =>
+      tool.slug !== currentSlug &&
+      tool.category === currentTool.category
+  ).slice(0, 3);
+}
 
 
 export function getCategoriesWithCounts() {
@@ -205,4 +212,16 @@ export function getCategoriesWithCounts() {
       (tool) => tool.category === category.slug && tool.status === "live"
     ).length,
   }));
+}
+
+export function searchTools(query: string): ToolInfo[] {
+  const search = query.toLowerCase();
+
+  return ALL_TOOLS.filter((tool) => {
+    return (
+      tool.name.toLowerCase().includes(search) ||
+      tool.description.toLowerCase().includes(search) ||
+      tool.keywords?.some((k) => k.toLowerCase().includes(search))
+    );
+  });
 }

@@ -1,4 +1,15 @@
-export function ToolHeader({ icon: Icon, title, description, category }: any) {
+
+import { LucideIcon } from "lucide-react";
+
+interface ToolHeaderProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  category?: string;
+}
+
+
+export function ToolHeader({ icon: Icon, title, description, category }: ToolHeaderProps) {
   return (
     <header className="flex flex-col gap-4">
       <div className="flex items-center gap-3">

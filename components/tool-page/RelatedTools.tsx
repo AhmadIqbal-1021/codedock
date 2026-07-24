@@ -1,8 +1,8 @@
 import { ToolCard } from "@/components/home/ToolCard";
-import type { Tool } from "@/constants/tools";
+import type { ToolInfo } from "@/constants/all-tools";
 
 interface RelatedToolsProps {
-  tools: Tool[];
+  tools: ToolInfo[];
   title?: string;
 }
 
