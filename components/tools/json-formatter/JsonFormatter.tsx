@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ToolToolbar, type ToolAction } from "@/components/shared/ToolToolbar";
 import { JsonEditor } from "./JsonEditor";
 import TextStats from "@/components/shared/TextStats";
+import ToolError from "@/components/shared/ToolError";
 
 
 const SAMPLE_PLACEHOLDER = `{
@@ -338,41 +339,26 @@ const handleFormat = useCallback(() => {
           value={input}
           onChange={setInput}
           placeholder={SAMPLE_PLACEHOLDER}
-                  error={
-          error && (
-            <div className="rounded-md border p-4 text-sm">
-              <p className="font-semibold">
-                      {
-                      error.line
-                      ? "Invalid JSON"
-                      : "Error"
-                      }
-                      </p>
-
-                            <div className="mt-2 space-y-1">                
-              {
-              error.line && (
-              <p>
-              Line: {error.line}
-              </p>
-              )
-              }
-
-              {
-              error.column && (
-              <p>
-              Column: {error.column}
-              </p>
-                  )
-                }
-
-            <p>{error.message}</p>
-              </div>
-            </div>
+                  error=         {error && (
+  <ToolError
+    title="Invalid JSON"
+    message={
+      [
+        error.line
+          ? `Line: ${error.line}`
+          : null,
+        error.column
+          ? `Column: ${error.column}`
+          : null,
+        error.message,
+      ]
+        .filter(Boolean)
+        .join(" • ")
+    }
+  />
+)}
             
-          )
-          
-        }
+     
 
         />
         

@@ -126,7 +126,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: Regex,
     status: "coming-soon",
-     featured: true,
+     featured: false,
     keywords: ["regex", "regular expression", "pattern", "tester"],
   },
   {
@@ -137,7 +137,8 @@ export const ALL_TOOLS: ToolInfo[] = [
       "Convert plain text to Base64 or decode Base64 back to readable text, entirely in your browser.",
     category: "developer-tools",
     icon: Binary,
-    status: "coming-soon",
+    status: "live",
+    featured: true,
     keywords: ["base64", "encode", "decode", "converter"],
   },
   {
@@ -149,7 +150,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: Link2,
     status: "coming-soon",
-     featured: true,
+     featured: false,
     keywords: ["url", "encode", "decode", "uri", "percent encoding"],
   },
   {
@@ -161,7 +162,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "productivity",
     icon: Lock,
     status: "coming-soon",
-     featured: true,
+     featured: false,
     keywords: ["password", "generator", "security", "random"],
   },
 ];

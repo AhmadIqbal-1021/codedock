@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Copy, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolToolbar, type ToolAction } from "@/components/shared/ToolToolbar";
+import ToolError from "@/components/shared/ToolError";
 
 type JwtPart = {
   value: string;
@@ -150,16 +151,11 @@ export function JwtDecoder() {
         />
       </div>
 
-      {error && (
-        <div className="rounded-xl border p-4 text-sm">
-          <p className="font-semibold">
-            Invalid JWT
-          </p>
-
-          <p className="mt-1 text-muted-foreground">
-            {error.message}
-          </p>
-        </div>
+          {error && (
+        <ToolError
+          title="Invalid JWT"
+          message={error.message}
+        />
       )}
 
       {(header || payload || signature) && (
