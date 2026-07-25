@@ -146,17 +146,22 @@ export function JwtDecoder() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Paste your JWT token here..."
-          className="min-h-40 w-full resize-y rounded-xl border bg-background p-4 font-mono text-sm outline-none transition focus:ring-2 focus:ring-ring"
-          spellCheck={false}
+          className={`min-h-40 w-full resize-y rounded-xl border bg-background p-4 font-mono text-sm outline-none transition focus:ring-2 ${
+      error
+        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+        : "focus:ring-ring"
+    }`} spellCheck={false}
+      aria-invalid={Boolean(error)}
         />
-      </div>
-
-          {error && (
+         {error && (
         <ToolError
           title="Invalid JWT"
           message={error.message}
         />
       )}
+      </div>
+
+         
 
       {(header || payload || signature) && (
         <div className="grid gap-5 lg:grid-cols-2">
