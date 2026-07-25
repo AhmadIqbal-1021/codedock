@@ -113,7 +113,7 @@ export const ALL_TOOLS: ToolInfo[] = [
       "Paste a JSON Web Token to inspect its header and payload. Decoding happens entirely client-side.",
     category: "developer-tools",
     icon: KeyRound,
-    status: "coming-soon",
+    status: "live",
      featured: true,
     keywords: ["jwt", "decoder", "token", "auth", "json web token"],
   },
