@@ -149,8 +149,9 @@ export const ALL_TOOLS: ToolInfo[] = [
       "Percent-encode or decode URLs and query parameters without leaving your browser.",
     category: "developer-tools",
     icon: Link2,
-    status: "coming-soon",
-     featured: false,
+    status: "live",
+     featured: true,
+
     keywords: ["url", "encode", "decode", "uri", "percent encoding"],
   },
   {
