@@ -1,10 +1,11 @@
+import Link from "next/link";
 import { Search } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import { ThemeToggle } from "./ThemeToggle";
-import { MobileNav } from "./MobileNav";  
+import { MobileNav } from "./MobileNav";
 import { NAV_LINKS } from "./nav-links";
 
 /**
@@ -37,9 +38,12 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              aria-label="Search"
+              aria-label="Search tools"
+              asChild
             >
-              <Search className="h-[18px] w-[18px]" />
+              <Link href="/tools">
+                <Search className="h-[18px] w-[18px]" />
+              </Link>
             </Button>
 
             <ThemeToggle />
@@ -54,12 +58,6 @@ export function Navbar() {
               <a href="https://github.com" target="_blank" rel="noreferrer">
                 <FaGithub className="h-[18px] w-[18px]" />
               </a>
-            </Button>
-
-            <Button
-              className="ml-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 px-5 text-white shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset] transition-opacity hover:opacity-90"
-            >
-              Get Started
             </Button>
           </div>
 

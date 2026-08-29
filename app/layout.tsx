@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -58,8 +59,24 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/*
+          The site's whole visual identity (dark-glass navbar, gradient
+          accents) is designed dark-first, so the default stays dark for
+          everyone rather than following system preference — the toggle
+          still genuinely switches to light (globals.css defines full
+          light-mode tokens), it just isn't the silent default.
+          suppressHydrationWarning on <html> is required by next-themes:
+          it sets the class attribute before React hydrates to avoid a
+          flash of the wrong theme, which necessarily differs from the
+          server-rendered markup for that one attribute.
+        */}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

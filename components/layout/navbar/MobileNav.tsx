@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, Search, Moon } from "lucide-react";
+import Link from "next/link";
+import { Menu, Search } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import {
   Sheet,
@@ -13,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
+import { ThemeToggle } from "./ThemeToggle";
 import { NAV_LINKS } from "./nav-links";
 
 /**
@@ -63,18 +65,14 @@ export function MobileNav() {
               variant="ghost"
               size="icon"
               className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              aria-label="Search"
+              aria-label="Search tools"
+              asChild
             >
-              <Search className="h-[18px] w-[18px]" />
+              <Link href="/tools" onClick={close}>
+                <Search className="h-[18px] w-[18px]" />
+              </Link>
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              aria-label="Toggle theme"
-            >
-              <Moon className="h-[18px] w-[18px]" />
-            </Button>
+            <ThemeToggle />
           </div>
 
           <Button
@@ -86,13 +84,6 @@ export function MobileNav() {
               <FaGithub className="h-4 w-4" />
               GitHub
             </a>
-          </Button>
-
-          <Button
-            className="w-full justify-center rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:opacity-90"
-            onClick={close}
-          >
-            Get Started
           </Button>
         </div>
       </SheetContent>
