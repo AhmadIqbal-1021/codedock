@@ -19,7 +19,7 @@ export function CategoryCard({ category, className }: CategoryCardProps) {
 
   return (
     <Link
-      href={`/tools/${slug}`}
+      href={`/categories/${slug}`}
       className={cn(
         "group relative flex flex-col gap-4 rounded-2xl border border-white/10 bg-foreground/[0.03] p-6",
         "transition-all duration-300 ease-out",

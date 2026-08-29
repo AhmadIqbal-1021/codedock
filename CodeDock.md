@@ -112,7 +112,7 @@ If a tool ever needs a fourth kind of change to "hook up," that's a sign the reg
 
 ## 4. The Registry — `constants/all-tools.ts`
 
-This supersedes the old `constants/tools.ts` entirely. `tools.ts` and any components still importing it (`ToolCard`, `FeaturedTools`, `RelatedTools`, tool routing) must be migrated over — this is outstanding work, not done yet.
+This supersedes the old `constants/tools.ts` entirely. `tools.ts` no longer exists in the repo, and `ToolCard`, `FeaturedTools`, `RelatedTools`, and tool routing all already import from `all-tools.ts` — this migration is done, not outstanding.
 
 ```ts
 interface ToolInfo {
@@ -137,8 +137,8 @@ interface ToolInfo {
 - `getToolsByCategory(category)`
 - `getLiveTools()` — critical: homepage/nav must filter to `status: "live"` only, so unfinished tools are never linked before they're ready
 - `getRelatedTools(tool)` — currently intentionally simple: same-category, up to 3 tools. Do not over-engineer this (no tag-similarity scoring, no ML) until there are enough tools per category for it to matter.
-- `getCategoriesWithCounts()` — **not yet built**, needed for a categories/directory page
-- `searchTools(query)` — **not yet built**, needed for the site-wide tool search in the Hero and a future `/tools` directory page
+- `getCategoriesWithCounts()` — built, and wired into the homepage's `Categories` section (previously that section showed hand-typed, inaccurate counts instead of calling this).
+- `searchTools(query)` — built, but not yet wired to any UI. The Hero's search bar currently just scrolls to the on-page tools grid rather than calling this — real search UI (likely a `/tools` directory page, Phase C) is still outstanding.
 
 ---
 
@@ -177,13 +177,24 @@ interface ToolInfo {
 | 9 | Unix Timestamp Converter | ✅ Live | Bidirectional, seconds/ms (never auto-guessed), local/UTC/ISO 8601, live "current timestamp" panel. |
 | 10 | Lorem Ipsum Generator | ✅ Live | Words/sentences/paragraphs modes, local word bank (no dependency), "start with Lorem ipsum" toggle, download. |
 | 11 | Color Converter | ✅ Live | Native `<input type="color">` + manual hex, HEX/RGB/HSL conversion math from scratch, contrast-aware preview text. |
-| 12 | HTML Formatter | 🔜 In progress | Custom tokenizer/tree-based formatter + minifier, deliberately **no `dangerouslySetInnerHTML`** (security). Must special-case `<pre>`, `<textarea>`, `<script>`, `<style>` since whitespace/content inside them is semantically meaningful and must not be reformatted. This is the immediate next task to finish. |
+| 12 | HTML Formatter | ✅ Live | Hand-rolled tokenizer/pretty-printer + minifier, no external formatting dependency, no `dangerouslySetInnerHTML`. Correctly special-cases `<pre>`, `<textarea>`, `<script>`, `<style>` — their content is copied through verbatim, never reflowed. Non-fatal structural diagnostics (unclosed/unmatched tags) surface via `ToolError` without blocking output. |
+| 13 | HTML Entity Encoder/Decoder | ✅ Live | Named + numeric (`&#39;`/`&#x27;`) entity support, ~133-entry hand-rolled table + full Latin-1 block. Decoding deliberately never uses the `innerHTML`/`DOMParser` trick — that can fire handlers even on a detached element — so it's regex + table lookup + `String.fromCodePoint()` only. Lenient: unrecognized/malformed entities pass through unchanged, like a browser. |
+| 14 | CSS Formatter | ✅ Live | Hand-rolled recursive-descent CSS3 tokenizer, no `postcss`/parser dependency. Handles nested at-rules (`@media`, `@supports`, `@keyframes`, `@layer`, `@container`), comma-separated multi-selectors, and correctly ignores `{`/`}`/`;`/`:` inside quoted strings or `url(...)` (including `data:` URLs). |
+| 15 | Number Base Converter | ✅ Live | Binary/octal/decimal/hex, all four fields update live off any one edit. Uses native `BigInt` (never `Number()`/`parseInt`) for the actual conversion, so precision holds above `Number.MAX_SAFE_INTEGER` — verified against a 20-digit decimal input. Supports negative integers. |
+| 16 | JWT Generator | ✅ Live | HMAC only (HS256/HS384/HS512) — RS256/ES256 explicitly out of scope (asymmetric key UX is a much bigger tool). Signs via `crypto.subtle` per this project's crypto rule. **Verified against the canonical jwt.io HS256 test vector, byte-for-byte.** "Testing/dev only" disclaimer in the UI. Natural companion to JWT Decoder (#2). |
+| 17 | Markdown Previewer | ✅ Live | Hand-rolled Markdown parser → typed node tree → real React elements via JSX — **never `dangerouslySetInnerHTML`, never a raw HTML string at any point in the pipeline.** Link/image URLs pass through an allowlist sanitizer (`http:`/`https:`/`mailto:`/relative only); a `javascript:` or `data:` URL renders as inert text, not a working link. Verified against `<img onerror>` and `javascript:` payloads. |
+| 18 | JavaScript Formatter | ✅ Live | Deliberately scoped as a **safe, lightweight beautifier, not a Prettier-equivalent** — a real AST-based JS formatter risks silently corrupting code if subtly wrong, which is a worse failure mode than a CSS/HTML formatter bug. Guarantees its transformation is **whitespace-only and content-preserving by construction**: every non-whitespace character of the input appears unchanged in the output; only whitespace between tokens is ever chosen. Verified via an 18-case whitespace-stripped equality self-check (nested template literals, regex-vs-division, ASI hazards, etc.) before being wired in. Indents by `{`/`}` depth only — doesn't line-wrap long argument lists like Prettier would. |
+| 19 | XML Formatter | ✅ Live | Sibling to HTML Formatter but with real XML semantics, not HTML's: tag names are case-**sensitive**, there's no void-element list (self-closing is purely a property of the source text), `<?xml ...?>`/other processing instructions and `<!DOCTYPE>` pass through unmodified, and `<![CDATA[...]]>` is copied through completely verbatim, exactly like HTML's `<pre>`/`<script>` handling. Generic — works for SVG, RSS, config files, anything well-formed. |
+| 20 | SQL Formatter | ✅ Live | Same safety philosophy as the JavaScript Formatter — **whitespace-only, content-preserving by construction**, since a real dialect-aware SQL parser risks silently corrupting a query if subtly wrong. The one narrow, opt-in exception: an off-by-default "Uppercase keywords" toggle that only changes case on confidently-recognized keyword tokens (safe because SQL keywords are case-insensitive everywhere) — string literals, quoted identifiers, and comments are never touched. Formats by clause (SELECT/FROM/WHERE/JOIN variants/etc.) and `(`/`)` nesting depth. Self-checked against 10 queries × 2 modes × keyword-toggle on/off. |
 
-**Immediate action items from this audit (do these before adding new tools):**
-- [ ] Confirm JWT Decoder and Base64 Encoder/Decoder actually have correct, matching entries in `ALL_TOOLS` and `TOOL_RENDERERS` with `status: "live"`.
-- [ ] Finish HTML Formatter.
-- [ ] Migrate `ToolCard`, `FeaturedTools`, `RelatedTools`, and tool routing off the old `tools.ts` onto `all-tools.ts`.
-- [ ] Backfill `features` / `faqs` / `seo` metadata for tools 2–11 (only JSON Formatter has this fully done — and it's the highest-leverage SEO work available right now, more valuable than building tool #13).
+**Phase B complete at 20 tools** — the spec's own checkpoint for pausing to do an architecture/SEO/performance review before Phase C (see §12).
+
+**Immediate action items from this audit — all complete as of the Phase A pass:**
+- [x] Confirmed JWT Decoder and Base64 Encoder/Decoder have correct, matching entries in `ALL_TOOLS` and `TOOL_RENDERERS` with `status: "live"`. (Found and fixed a live instance of the same bug class on Regex Tester instead — its `ALL_TOOLS` slug had been typo'd to a single space, `" "`, silently 404ing the page. Also added a build-time guard: `app/tools/[slug]/page.tsx` now throws during `next build` if any `status: "live"` tool has no matching `TOOL_RENDERERS` key, so this bug class can no longer ship silently as "Coming Soon.")
+- [x] Finished HTML Formatter.
+- [x] `tools.ts` no longer exists in the repo — `all-tools.ts` is already the sole registry; nothing left to migrate.
+- [x] Backfilled `features` / `faqs` / `seo` metadata for every tool (1–12) — JSON Formatter was actually missing `features` too, not just tools 2–11 as originally audited; fixed.
+- [x] Also fixed, beyond this checklist: `app/tools/[slug]/page.tsx` had no `generateMetadata` at all (every tool page served the identical homepage `<title>`/description to Google), and `sitemap.ts` never listed a single tool page. Both are now wired to the registry, plus JSON-LD (`SoftwareApplication`/`FAQPage`) and static prerendering (`generateStaticParams`) were added per §11.
 
 ---
 
@@ -224,15 +235,15 @@ Fix the Password Generator's `react-hooks/set-state-in-effect` warning during th
 
 ## 11. SEO Strategy (this is the actual growth engine — treat it as first-class work, not an afterthought)
 
-**Already in place:** per-page metadata support, `sitemap.ts`, `robots.ts`.
+**Already in place:** per-tool `generateMetadata` (title/description/keywords/canonical/OG/Twitter, driven by each tool's `seo` field), `sitemap.ts` (lists every `status: "live"` tool automatically via `getLiveTools()`), `robots.ts`, JSON-LD (`SoftwareApplication` + `FAQPage`) on every tool page, and `features`/`faqs`/`seo` copy for all 12 tools. Note: earlier drafts of this doc claimed metadata/sitemap were "already in place" when they weren't — `generateMetadata` didn't exist at all (every tool page served the identical homepage title/description to Google) and `sitemap.ts` never listed a single tool page. Both were fixed in the Phase A pass; verify against the actual files if this doc and the repo ever disagree again.
 
 **Must-do, ranked by leverage:**
 
-1. **Metadata + FAQ + features content for every existing tool** (currently only JSON Formatter has this). Each tool page should target its real long-tail queries — e.g. `/tools/json-formatter` for "json formatter," "json beautifier," "format json online," "pretty json," "json validator." Write unique, genuinely useful copy — not keyword-stuffed filler. Thin/duplicate content across 12 tool pages is worse for SEO than 5 excellent pages.
-2. **Core Web Vitals** — measure with Lighthouse/PageSpeed Insights on every tool page, not just the homepage. This is a direct ranking factor.
-3. **Internal linking** via `RelatedTools` and a real `/tools` directory/search page (`searchTools()` needs to be built) — Google needs a crawlable path to every tool, and users need to discover tools they didn't search for by name.
-4. **Structured data (JSON-LD)** — `SoftwareApplication` or `WebApplication` schema per tool, `FAQPage` schema wherever `ToolFAQ` is used. This is currently missing from both prior summaries and is a genuinely high-leverage, low-effort SEO win.
-5. **Canonical URLs**, correct `og:` / Twitter card metadata for shareability.
+1. ~~Metadata + FAQ + features content for every existing tool~~ — done (see above).
+2. **Core Web Vitals** — measure with Lighthouse/PageSpeed Insights on every tool page, not just the homepage. This is a direct ranking factor. (Tool pages are now statically prerendered via `generateStaticParams`, which should help, but hasn't been measured yet.)
+3. **Internal linking** via `RelatedTools` and a real `/tools` directory/search page — `searchTools()` is built but not yet wired to any UI; the actual directory/search page is still Phase C work. Google needs a crawlable path to every tool, and users need to discover tools they didn't search for by name.
+4. ~~Structured data (JSON-LD)~~ — done (see above).
+5. **Canonical URLs**, correct `og:` / Twitter card metadata for shareability — done per-tool; still worth a manual spot-check with a social share debugger once the site is live.
 6. **Off-site**: submit to relevant developer-tool directories, post on Product Hunt / Hacker News / r/webdev when there's a real milestone (e.g., 20 tools), and get a few genuine backlinks — this materially affects how fast Google trusts a brand-new domain.
 7. **Google Search Console from day one** — submit the sitemap immediately, monitor indexation and query data; this is how you'll actually learn which tools/keywords are working.
 
@@ -240,12 +251,25 @@ Fix the Password Generator's `react-hooks/set-state-in-effect` warning during th
 
 ## 12. Roadmap
 
-**Phase A (current):** Finish HTML Formatter → migrate to `all-tools.ts` fully → backfill SEO metadata for all 11 finished tools → add JSON-LD structured data → verify JWT/Base64 registry correctness.
+**Phase A — complete.** HTML Formatter finished, `all-tools.ts` confirmed as the sole registry, SEO metadata backfilled for all 12 tools, JSON-LD structured data added, JWT/Base64/Regex registry correctness verified (and guarded at build time going forward).
 
-**Phase B — Developer Essentials (next tools, in this order):**
-CSS Formatter → JavaScript Formatter → HTML Entity Encoder/Decoder → Number Base Converter → JWT Generator → Markdown Previewer → XML Formatter → SQL Formatter.
+**Phase B (current) — Developer Essentials (next tools, in this order):**
+~~CSS Formatter → JavaScript Formatter → HTML Entity Encoder/Decoder → Number Base Converter → JWT Generator → Markdown Previewer → XML Formatter → SQL Formatter~~ — **all eight done. Phase B complete, 20 tools live.**
 
-**Phase C (~20 tools):** Pause for an architecture + SEO + performance review before continuing. Build the `/tools` directory page with search and category browsing, `getCategoriesWithCounts()`, `searchTools()`.
+Also done, ahead of schedule:
+- A real **Privacy Policy** (`/privacy`) and **Terms of Service** (`/terms`) page, wired into the footer and sitemap — a Phase D prerequisite (AdSense requires a privacy policy) pulled forward since it was cheap and unblocks something real.
+- Real **category pages** (`/categories/[slug]`) — the homepage's category cards used to link to `/tools/{category-slug}`, which collided with the tool-detail route and 404'd for every category. They now link to a real page listing that category's live tools (or an honest "no tools yet" state), reusing `getLiveTools()`/`ToolCard`, and added to the sitemap.
+
+**20-tool checkpoint review (done):**
+- ✅ **`"use client"` discipline** — `ToolLayout`/`ToolHeader`/`ToolFeatures`/`ToolFAQ`/`RelatedTools` and everything in `shared/` are Server Components; only `Hero.tsx` and each tool's own interactive component are client, as intended.
+- ✅ **SEO pipeline, verified against actual build output** — `sitemap.xml` has exactly 29 URLs (home + 20 tools + 6 categories + privacy + terms); spot-checked `.html` output confirms real per-page `<title>`/`<meta description>` (e.g. CSS Formatter's page ships its own title/description, not the homepage default).
+- ✅ **Registry integrity** — 20 unique slugs, every tool has all of `seo`/`features`/`faqs` (60 occurrences = 3 × 20, verified by count).
+- ✅ **Dead code removed** — `components/shared/ToolCard.tsx` and `components/home/SearchSection.tsx` were empty, unreferenced files; deleted. (`WhyCodeDock.tsx`/`LatestArticles.tsx` are intentionally-commented-out placeholders in `page.tsx`, not dead code — left alone.)
+- ⚠️ **Bundle-splitting gap found — decision made: defer.** Every tool page currently ships the same shared JS bundle containing **all 20 tools' code**, confirmed by diffing chunk references across several tool pages' built HTML and grepping tool component names inside the resulting chunk file. Root cause: all 20 tools live under one `[slug]` catch-all route (`app/tools/[slug]/page.tsx`), and Next.js compiles one client bundle per route template regardless of how many static params it has. Tried wrapping `TOOL_RENDERERS` entries in `next/dynamic()` — measured that it did **not** split the bundle (all 20 still landed in one ~184KB chunk) and added complexity for no benefit, so that change was reverted.
+
+  The real fix (moving to a real static route per tool instead of the single `[slug]` + registry lookup) was scoped and explicitly **not** done now: at this stage there's ~0 real traffic (per §0, expect near-zero for 2–4 months), so there's no live Core Web Vitals field data being hurt today, and restructuring now risks being redone anyway as more tools land. **Explicit trigger to revisit:** when real PageSpeed Insights / Search Console field data becomes available, or Phase D reaches ~50 tools — whichever comes first. At that point, re-open this note and actually do the per-route restructuring (it conflicts with §3's "exactly three additions" recipe — budget for updating that convention too, not just the routing).
+
+**Phase C (~20 tools) — complete.** Architecture + SEO + performance review done (see above). Built the real `/tools` directory page: live search-as-you-type + category filter chips over all live tools (client-side, no backend needed — the tool list is small), reads an initial `?q=` from the URL so the Hero's search bar and every "All Tools"/"Explore Tools" link now land somewhere real instead of a scroll-to-anchor placeholder. `getCategoriesWithCounts()` was already wired into the homepage; `getCategoriesWithCounts()`-style live filtering is now also what powers `/tools` and `/categories/[slug]`, though `/tools` does its own inline filtering rather than calling the existing `searchTools()` helper directly (kept the matching logic local to the page since it also needs to combine with the category filter — `searchTools()` remains available for any future non-UI/API use). Added to the sitemap; verified via build output (30 sitemap URLs, own `<title>`).
 
 **Phase D (25 → 50 → 100+ tools):** Continue by category (JSON/Data, Encoding, Security, Text, Web Dev, Developer Utilities — see full category list in the tool roadmap backlog). Introduce AdSense once there's real traffic (don't add ad slots to a site with no visitors — it adds nothing but latency and looks unfinished during a Search Console/Google review).
 

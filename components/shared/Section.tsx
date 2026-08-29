@@ -11,9 +11,9 @@ interface SectionProps {
  * top/bottom spacing so individual sections don't each reinvent it;
  * pass className to extend or override (e.g. background, id).
  */
-export function Section({ children, className }: SectionProps) {
+export function Section({ children, className, id }: SectionProps) {
   return (
-    <section className={cn("py-16 sm:py-20 lg:py-16", className)}>
+    <section id={id} className={cn("py-16 sm:py-20 lg:py-16", className)}>
       {children}
     </section>
   );

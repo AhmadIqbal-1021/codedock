@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ToolInfo } from "@/constants/all-tools";
+import { getCategoryName } from "@/constants/categories";
 
 interface ToolCardProps {
   tool: ToolInfo;
@@ -40,7 +41,7 @@ export function ToolCard({ tool, className }: ToolCardProps) {
           variant="secondary"
           className="rounded-full border border-white/10 bg-background/60 font-medium text-muted-foreground"
         >
-          {category}
+          {getCategoryName(category)}
         </Badge>
       </div>
 

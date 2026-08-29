@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 export const metadata: Metadata = {
   title: {
-    default: "CodeDock - Free Developer Tools & AI Utilities",
+    default: "CodeDock - Free Developer Tools",
     template: "%s | CodeDock",
   },
   description:
-    "CodeDock provides free developer tools, AI utilities, formatters, converters, and productivity tools for developers.",
+    "Free, fast, 100% client-side developer tools — JSON formatter, JWT decoder, regex tester, hash generator, and more. Nothing you type is ever sent to a server.",
   keywords: [
     "developer tools",
     "online tools",
-    "JSON formatter",
+    "json formatter",
     "regex tester",
-    "AI tools",
+    "jwt decoder",
     "coding utilities",
   ],
   authors: [
@@ -31,11 +32,12 @@ export const metadata: Metadata = {
       name: "CodeDock",
     },
   ],
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     title: "CodeDock - Free Developer Tools",
     description:
-      "Fast, free developer tools and AI-powered utilities.",
-    url: "https://codedock.com",
+      "Fast, free, 100% client-side developer tools. Nothing you type is ever sent to a server.",
+    url: SITE_URL,
     siteName: "CodeDock",
     type: "website",
   },
@@ -43,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CodeDock - Free Developer Tools",
     description:
-      "Free developer tools and AI utilities.",
+      "Fast, free, 100% client-side developer tools.",
   },
 };
 

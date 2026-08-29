@@ -10,43 +10,19 @@ export interface FooterColumn {
 }
 
 /**
- * The three link columns (Product, Resources, Company). Footer.tsx
- * only maps over this array — add, remove, or reorder links here.
+ * Footer link columns. Deliberately trimmed to real, working
+ * destinations only. There used to be Resources (Blog/Docs/Changelog/
+ * Support) and Company (About/Careers/Contact/Status) columns here,
+ * but none of those pages exist yet — a footer link that 404s does
+ * more damage to trust (and to how Google reads the site) than a
+ * short footer. Add columns back as the real pages ship.
  */
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    title: "Product",
+    title: "Explore",
     links: [
-      {
- label: "Developer Tools",
- href: "/tools/developer-tools",
-},
-{
- label: "AI Tools",
- href: "/tools/ai-tools",
-},
-{
- label: "Resume Tools",
- href: "/tools/resume-tools",
-},
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Blog", href: "/blog" },
-      { label: "Documentation", href: "/docs" },
-      { label: "Changelog", href: "/changelog" },
-      { label: "Support", href: "/support" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Careers", href: "/careers" },
-      { label: "Contact", href: "/contact" },
-      { label: "Status", href: "/status" },
+      { label: "All Tools", href: "/tools" },
+      { label: "Categories", href: "/#categories" },
     ],
   },
 ];

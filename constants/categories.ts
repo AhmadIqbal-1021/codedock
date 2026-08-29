@@ -64,3 +64,8 @@ export const CATEGORIES: Category[] = [
     icon: Zap,
   },
 ];
+
+/** Looks up a category's display name from its slug, e.g. for headers/badges that only have the slug on hand. Falls back to the slug itself if unknown. */
+export function getCategoryName(slug: string): string {
+  return CATEGORIES.find((category) => category.slug === slug)?.name ?? slug;
+}

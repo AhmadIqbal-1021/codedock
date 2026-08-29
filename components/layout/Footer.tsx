@@ -19,9 +19,9 @@ export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-background/60">
       <Container className="py-14">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2">
           {/* Brand column */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div>
             <Link href="/" className="flex items-center gap-2.5" aria-label="CodeDock home">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400">
                 <span className="font-mono text-sm font-semibold text-white">
@@ -69,17 +69,19 @@ export function Footer() {
             &copy; {year} CodeDock. All rights reserved.
           </p>
 
-          <nav aria-label="Legal" className="flex items-center gap-6">
-            {LEGAL_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          {LEGAL_LINKS.length > 0 && (
+            <nav aria-label="Legal" className="flex items-center gap-6">
+              {LEGAL_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
       </Container>
     </footer>

@@ -1,29 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Search, Sparkles } from "lucide-react";
+import { ArrowRight, Search, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Container } from "@/components/shared/Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// const POPULAR_TOOLS = [
-//   { label: "JSON Formatter", href: "/developer-tools/json-formatter" },
-//   { label: "Regex Tester", href: "/developer-tools/regex-tester" },
-//   { label: "Resume Builder", href: "/resume-tools/builder" },
-//   { label: "Prompt Optimizer", href: "/ai-tools/prompt-optimizer" },
-// ];
-
 /**
- * Primary landing hero: headline, subheading, search, dual CTAs,
- * and a row of popular-tool shortcuts. Search is presentation-only
- * here — wire onSubmit up to your real search route/handler.
+ * Primary landing hero: headline, subheading, search, and dual CTAs.
  */
 export function Hero() {
   const [query, setQuery] = useState("");
-
-    const router = useRouter()
+  const router = useRouter();
 
   return (
     <section className="relative overflow-hidden">
@@ -37,32 +27,33 @@ export function Hero() {
 
       <Container className="flex flex-col items-center py-20 text-center sm:py-28">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-foreground/5 px-3 py-1 text-xs font-medium text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-          Now with AI-powered tools
+          <ShieldCheck className="h-3.5 w-3.5 text-cyan-400" />
+          100% client-side — nothing you type is ever sent to a server
         </span>
 
         <h1 className="mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-        Developer tools that just work.{" "}
+          Developer tools that{" "}
           <span className="bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent">
-           AI when you need it.
+            just work.
           </span>
         </h1>
 
         <p className="mt-5 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          Fast, free developer tools with AI-powered features when you need them.
+          Fast, free formatters, converters, and generators for everyday
+          coding — no sign-up, no ads slowing you down.
         </p>
 
         {/* Search bar */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            router.push(`/search?q=${query}`);
+            const trimmed = query.trim();
+            router.push(trimmed ? `/tools?q=${encodeURIComponent(trimmed)}` : "/tools");
           }}
           className="mt-9 flex w-full max-w-xl items-center gap-2 rounded-full border border-white/10 bg-background/60 p-1.5 shadow-lg shadow-black/5 backdrop-blur-xl transition-colors focus-within:border-indigo-400/40"
         >
           <Search className="ml-3 h-4 w-4 shrink-0 text-muted-foreground" />
           <Input
-          
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -79,28 +70,6 @@ export function Hero() {
           </Button>
         </form>
 
-        {/* Popular tools
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm text-muted-foreground">
-          <span className="text-xs uppercase tracking-wide text-muted-foreground/70">
-            Popular:
-          </span>
-          {POPULAR_TOOLS.map((tool, i) => (
-            <span key={tool.href} className="flex items-center gap-2">
-              <Link
-                href={tool.href}
-                className="rounded-full transition-colors hover:text-foreground"
-              >
-                {tool.label}
-              </Link>
-              {i < POPULAR_TOOLS.length - 1 && (
-                <span aria-hidden className="text-muted-foreground/30">
-                  &middot;
-                </span>
-              )}
-            </span>
-          ))}
-        </div> */}
-
         {/* CTAs */}
         <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:w-auto sm:flex-row">
           <Button
@@ -108,7 +77,7 @@ export function Hero() {
             className="rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 px-7 text-white hover:opacity-90"
             asChild
           >
-            <Link href="/developer-tools">
+            <Link href="/tools">
               Explore Tools
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Link>
@@ -120,10 +89,7 @@ export function Hero() {
             className="rounded-full border-white/15 bg-transparent px-7"
             asChild
           >
-            <Link href="/ai-tools">
-              <Sparkles className="mr-1.5 h-4 w-4" />
-              AI Tools
-            </Link>
+            <Link href="/#categories">Browse Categories</Link>
           </Button>
         </div>
       </Container>

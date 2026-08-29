@@ -6,7 +6,7 @@ import { ToolHeader } from "./ToolHeader";
 
 interface ToolLayoutProps {
   icon: LucideIcon;
-  title: string;
+  title: string;  
   description: string;
   category?: string;
   children: ReactNode;
