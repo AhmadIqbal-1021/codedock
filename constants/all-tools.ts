@@ -5,6 +5,11 @@ import {
   Binary,
   Link2,
   Lock,
+  Fingerprint,
+  Hash,
+  Clock,
+  FileText,
+  Palette,
   type LucideIcon,
 } from "lucide-react";
 import { CATEGORIES } from "./categories";
@@ -118,15 +123,15 @@ export const ALL_TOOLS: ToolInfo[] = [
     keywords: ["jwt", "decoder", "token", "auth", "json web token"],
   },
   {
-    slug: "regex-tester",
+    slug: " ",
     name: "Regex Tester",
     shortDescription: "Build and debug regular expressions in real time.",
     description:
       "Test regular expressions against sample text with live match highlighting and group capture.",
     category: "developer-tools",
     icon: Regex,
-    status: "coming-soon",
-     featured: false,
+    status: "live",
+     featured: true,
     keywords: ["regex", "regular expression", "pattern", "tester"],
   },
   {
@@ -150,7 +155,7 @@ export const ALL_TOOLS: ToolInfo[] = [
     category: "developer-tools",
     icon: Link2,
     status: "live",
-     featured: true,
+     featured: true,    
 
     keywords: ["url", "encode", "decode", "uri", "percent encoding"],
   },
@@ -162,10 +167,112 @@ export const ALL_TOOLS: ToolInfo[] = [
       "Create secure passwords with customizable length and character sets, generated locally on your device.",
     category: "productivity",
     icon: Lock,
-    status: "coming-soon",
-     featured: false,
+    status: "live",
+     featured: true,
     keywords: ["password", "generator", "security", "random"],
   },
+  {
+  slug: "uuid-generator",
+  name: "UUID Generator",
+  shortDescription: "Generate random UUIDs instantly.",
+  description:
+    "Generate secure Version 4 UUIDs instantly for databases, APIs, testing, and application development. Everything is generated client-side.",
+  category: "developer-tools",
+  icon: Fingerprint,
+  status: "live",
+  featured: true,
+  keywords: ["uuid", "uuid generator", "guid", "v4", "random id", "identifier"],
+},
+{
+  slug: "hash-generator",
+  name: "Hash Generator",
+  shortDescription: "Generate cryptographic hashes instantly.",
+  description:
+    "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes for any text or input. All hashing is performed securely in your browser.",
+  category: "developer-tools",
+  icon: Hash,
+  status: "live",
+  featured: true,
+  keywords: [
+    "hash",
+    "hash generator",
+    "md5",
+    "sha1",
+    "sha256",
+    "sha384",
+    "sha512",
+    "checksum",
+    "cryptography"
+  ],
+},
+{
+  slug: "unix-timestamp-converter",
+  name: "Unix Timestamp Converter",
+  shortDescription: "Convert Unix timestamps to readable dates instantly.",
+  description:
+    "Convert Unix timestamps into human-readable date and time formats, or generate Unix timestamps from any date. Supports seconds and milliseconds, with all conversions performed securely in your browser.",
+  category: "developer-tools",
+  icon: Clock,
+  status: "live",
+  featured: true,
+  keywords: [
+    "unix timestamp",
+    "timestamp converter",
+    "epoch converter",
+    "epoch time",
+    "unix time",
+    "date converter",
+    "timestamp",
+    "seconds",
+    "milliseconds",
+    "datetime"
+  ],
+},
+{
+  slug: "color-converter",
+  name: "Color Converter",
+  shortDescription: "Convert colors between popular formats instantly.",
+  description:
+    "Convert colors between HEX, RGB, HSL, HSV, and CMYK formats with real-time previews. Perfect for designers and developers, with all conversions performed securely in your browser.",
+  category: "developer-tools",
+  icon: Palette,
+  status: "live",
+  featured: true,
+  keywords: [
+    "color converter",
+    "hex",
+    "rgb",
+    "hsl",
+    "hsv",
+    "cmyk",
+    "color picker",
+    "color tool",
+    "css colors",
+    "web colors"
+  ],
+},
+{
+  slug: "lorem-ipsum-generator",
+  name: "Lorem Ipsum Generator",
+  shortDescription: "Generate placeholder text for designs and content.",
+  description:
+    "Generate customizable Lorem Ipsum placeholder text with paragraphs, sentences, or words. Ideal for mockups, prototypes, websites, and design projects, all generated instantly in your browser.",
+  category: "developer-tools",
+  icon: FileText,
+  status: "live",
+  featured: true,
+  keywords: [
+    "lorem ipsum",
+    "placeholder text",
+    "dummy text",
+    "text generator",
+    "latin text",
+    "mockup content",
+    "website placeholder",
+    "design tool",
+    "content generator"
+  ],
+},
 ];
 
 /** Lookup a single tool by its slug. Returns undefined if not found. */
